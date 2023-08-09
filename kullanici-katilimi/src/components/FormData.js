@@ -1,5 +1,5 @@
 import React from "react";
-import { FormGroup, Label, Input } from "reactstrap";
+import { FormGroup, Label, Input, FormText } from "reactstrap";
 
 function FormOlustur({ formData, handleChange }) {
   return (
@@ -56,7 +56,7 @@ function FormOlustur({ formData, handleChange }) {
           type="password"
           id="password"
           name="password"
-          value={formData.value}
+          value={formData.password}
           onChange={handleChange}
           placeholder="Lütfen şifrenizi giriniz."
         />
@@ -94,6 +94,21 @@ function FormOlustur({ formData, handleChange }) {
           checked={formData.terms}
           onChange={handleChange}
         />
+      </FormGroup>
+
+      <FormGroup>
+        <Label for="exampleFile">
+          <b>File: </b>
+        </Label>
+        <Input type="file" name="file" id="exampleFile" />
+        <FormText color="muted">
+          Eklemek istediğiniz bir dosya varsa dosyanızı seçebilirsiniz.
+        </FormText>
+      </FormGroup>
+      <FormGroup check>
+        <Label check>
+          <Input type="checkbox" /> Check me out
+        </Label>
       </FormGroup>
     </>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import * as Yup from "yup";
 import FormData from "./FormData";
+import "./Form.css";
 
 function Form() {
   const [gelenData, setGelenData] = useState();
@@ -23,23 +24,6 @@ function Form() {
     age: "",
     terms: false,
   });
-
-  const checkFormErrors = (name, value) => {
-    Yup.reach(formSchema, name)
-      .validate(value)
-      .then(() => {
-        setErrors({
-          ...errors,
-          [name]: "",
-        });
-      })
-      .catch((err) => {
-        setErrors({
-          ...errors,
-          [name]: err.errors[0],
-        });
-      });
-  };
 
   const formSchema = Yup.object().shape({
     name: Yup.string().required("İsim zorunludur"),
@@ -63,19 +47,22 @@ function Form() {
     formSchema.isValid(formData).then((valid) => setDisabled(!valid));
   }, [formData]);
 
-  const handleChange = (event) => {
-    const { checked, name, value, type } = event.target;
-    const valueToUse = type === "checkbox" ? checked : value;
-    checkFormErrors(name, valueToUse);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: valueToUse,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   useEffect(() => {
-    formSchema.isValid(formData).then((valid) => setDisabled(!valid));
-  }, [formData, handleChange]);
+    const checkFormValidity = async () => {
+      const valid = await formSchema.isValid(formData);
+      setDisabled(!valid);
+    };
+
+    checkFormValidity();
+  }, [formData]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
