@@ -3,96 +3,117 @@ import axios from "axios";
 import * as Yup from "yup";
 import FormData from "./FormData";
 import "./Form.css";
+import { Button } from "reactstrap";
+
+const formSchema = Yup.object().shape({
+  firstname: Yup.string().required("İsim zorunludur"),
+  surname: Yup.string().required("Soyisim zorunludur"),
+  email: Yup.string().email().required("Lütfen E-posta adresinizi giriniz."),
+  password: Yup.string()
+    .min(6, "Şifreniz en az 6 karakterden uzun olmalıdır.")
+    .required("Şifre zorunludur."),
+  age: Yup.number().required("Yaş bilgisi seçmek zorunludur."),
+  checkbox: Yup.boolean().oneOf([true], "Onay kutusunu işaretlemelisiniz."),
+  file: Yup.mixed().test("fileType", "Desteklenmeyen dosya türü", (value) => {
+    if (!value) return true;
+
+    const allowedFileTypes = ["image/jpeg", "image/png", "application/pdf"];
+    return allowedFileTypes.includes(value.type);
+  }),
+});
 
 function Form() {
   const [gelenData, setGelenData] = useState();
 
   const [formData, setFormData] = useState({
-    name: "",
+    firstname: "",
     surname: "",
     email: "",
     password: "",
     age: "",
-    terms: false,
+    checkbox: false,
+    file: null,
   });
 
   const [errors, setErrors] = useState({
-    name: "",
+    firstname: "",
     surname: "",
     email: "",
     password: "",
     age: "",
-    terms: false,
+    checkbox: "",
+    file: "",
   });
 
-  const formSchema = Yup.object().shape({
-    name: Yup.string().required("İsim zorunludur"),
-    surname: Yup.string().required("Soyisim zorunludur"),
-    email: Yup.string()
-      .email("Bu email geçersiz!")
-      .required("Lütfen E-posta adresinizi giriniz."),
-    password: Yup.string()
-      .required("Lütfen bir şifre oluşturun.")
-      .min(6, "Şifreniz en az 6 karakterden uzun olmalıdır."),
-    terms: Yup.boolean().oneOf(
-      [true],
-      "Kullanım şartlarını kabul etmelisiniz."
-    ),
-    age: Yup.number().required("Yaş zorunludur"),
-    checkbox: Yup.boolean().oneOf([true], "Onay kutusunu işaretlemelisiniz."),
-  });
+  const checkFormErrors = (name, value) => {
+    Yup.reach(formSchema, name)
+      .validate(value)
+      .then(() => {
+        setErrors({
+          ...errors,
+          [name]: "",
+        });
+      })
+      .catch((err) => {
+        setErrors({
+          ...errors,
+          [name]: err.errors[0],
+        });
+      });
+  };
 
   const [disabled, setDisabled] = useState(true);
   useEffect(() => {
     formSchema.isValid(formData).then((valid) => setDisabled(!valid));
   }, [formData]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (event) => {
+    const { checked, name, value, type } = event.target;
+    const valueToUse = type === "checkbox" ? checked : value;
+    checkFormErrors(name, valueToUse);
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: valueToUse,
     });
   };
-
-  useEffect(() => {
-    const checkFormValidity = async () => {
-      const valid = await formSchema.isValid(formData);
-      setDisabled(!valid);
-    };
-
-    checkFormValidity();
-  }, [formData]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  };
-
-  const newPost = {
-    name: formData.name.trim(),
-    surname: formData.surname.trim(),
-    email: formData.email.trim(),
-    password: formData.password.trim(),
-    age: formData.age,
-    terms: formData.terms,
-  };
-
-  axios
-    .post("https://reqres.in/api/user", newPost)
-    .then((response) => {
-      setGelenData(response.data);
-      setFormData({
-        name: "",
-        surname: "",
-        email: "",
-        password: "",
-        age: "",
-        terms: false,
+    axios
+      .post("https://reqres.in/api/user", formData)
+      .then((response) => {
+        setGelenData(response.data);
+        setFormData({
+          firstname: "",
+          surname: "",
+          email: "",
+          password: "",
+          age: "",
+          checkbox: false,
+          file: null,
+        });
+        setErrors({
+          firstname: "",
+          surname: "",
+          email: "",
+          password: "",
+          age: "",
+          checkbox: "",
+          file: null,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  };
+
+  useEffect(() => {
+    const isValid = async () => {
+      const valid = await formSchema.isValid(formData);
+      setDisabled(!valid);
+    };
+    isValid();
+  }, [formData]);
 
   return (
     <div className="Container">
@@ -100,7 +121,7 @@ function Form() {
         <h2>Örnek Form </h2>
         <hr />
         <div style={{ color: "red" }}>
-          <div>{errors.name}</div>
+          <div>{errors.firstname}</div>
           <div>{errors.surname}</div>
           <div id="error-email">{errors.email}</div>
           <div id="error-password">{errors.password}</div>
@@ -109,13 +130,14 @@ function Form() {
           <form onSubmit={handleSubmit}>
             <FormData handleChange={handleChange} formData={formData} />
             <div className="flex">
-              <input
-                id="submit"
-                type="submit"
-                value="Submit"
-                className="submit"
-                disabled={disabled}
-              />
+              <Button onClick={handleSubmit}>
+                <input
+                  id="submit"
+                  type="submit"
+                  className="submit"
+                  disabled={disabled}
+                />
+              </Button>
             </div>
           </form>
         </div>
@@ -127,7 +149,7 @@ function Form() {
               <p>
                 <b>Name: </b>
               </p>
-              <p>{gelenData.name}</p>
+              <p>{gelenData.firstname}</p>
             </div>
             <div>
               <p>
@@ -146,6 +168,12 @@ function Form() {
                 <b>Age: </b>
               </p>
               <p>{gelenData.age}</p>
+            </div>
+            <div>
+              <p>
+                <b>File: </b>
+              </p>
+              <p>{gelenData.file}</p>
             </div>
           </div>
         )}

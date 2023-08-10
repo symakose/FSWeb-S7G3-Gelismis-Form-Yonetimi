@@ -1,117 +1,128 @@
 import React from "react";
-import { FormGroup, Label, Input, FormText } from "reactstrap";
+import { FormGroup, Label, Input, Col, FormText } from "reactstrap";
 
-function FormOlustur({ formData, handleChange }) {
+function FormData({ formData, handleChange }) {
   return (
     <>
-      <FormGroup>
-        <Label for="name">
+      <FormGroup row>
+        <Label htmlFor="firstname" sm={2}>
           <b>Name: </b>
         </Label>
-        <Input
-          type="text"
-          id="name"
-          name="name"
-          onChange={handleChange}
-          value={formData.name}
-          placeholder="Lütfen isim bilginizi giriniz."
-        />
+        <Col sm={10}>
+          <Input
+            className="label"
+            type="text"
+            id="firstname"
+            name="firstname"
+            onChange={handleChange}
+            value={formData.firstname}
+            placeholder="Lütfen isim bilginizi giriniz."
+          />
+        </Col>
       </FormGroup>
-      <FormGroup>
-        <Label htmlFor="surname">
+      <FormGroup row>
+        <Label htmlFor="surname" sm={2}>
           <b>Surname: </b>
         </Label>
-        <Input
-          className="label"
-          type="text"
-          id="surname"
-          value={formData.surname}
-          onChange={handleChange}
-          name="surname"
-          placeholder="Lütfen soyisim bilginizi giriniz."
-        />
+        <Col sm={10}>
+          <Input
+            className="label"
+            type="text"
+            id="surname"
+            value={formData.surname}
+            onChange={handleChange}
+            name="surname"
+            placeholder="Lütfen soyisim bilginizi giriniz."
+          />
+        </Col>
       </FormGroup>
 
-      <FormGroup>
-        <Label htmlFor="email">
+      <FormGroup row>
+        <Label htmlFor="email" sm={2}>
           <b>E-mail: </b>
         </Label>
-        <Input
-          className="label"
-          type="email"
-          id="email"
-          name="email"
-          onChange={handleChange}
-          value={formData.email}
-          placeholder="Lütfen email bilginizi giriniz."
-        />
+        <Col sm={10}>
+          <Input
+            className="label"
+            type="email"
+            id="email"
+            name="email"
+            onChange={handleChange}
+            value={formData.email}
+            placeholder="Lütfen email bilginizi giriniz."
+          />
+        </Col>
       </FormGroup>
 
-      <FormGroup>
-        <Label htmlFor="password">
+      <FormGroup row>
+        <Label htmlFor="password" sm={2}>
           <b>Password: </b>
         </Label>
-        <Input
-          className="label"
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Lütfen şifrenizi giriniz."
-        />
+        <Col sm={10}>
+          <Input
+            className="label"
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Lütfen şifrenizi giriniz."
+          />
+        </Col>
       </FormGroup>
 
       <FormGroup>
-        <Label>
+        <Label sm={2}>
           <b>Age: </b>
-
-          <select
-            className="selectOpt"
-            name="age"
-            id="age"
-            onChange={handleChange}
-            value={formData.age}
-          >
-            <option value="">Seçiniz</option>
-            <option value="18-21">18-21</option>
-            <option value="22-24">22-24</option>
-            <option value="25-29">25-29</option>
-            <option value="+30">+30</option>
-          </select>
+          <Col sm={10}>
+            <select
+              className="selectOpt"
+              name="age"
+              id="age"
+              onChange={handleChange}
+              value={formData.age}
+            >
+              <option value="">Yaşınızı Seçiniz</option>
+              <option value="18-21">18-21</option>
+              <option value="22-24">22-24</option>
+              <option value="25-29">25-29</option>
+              <option value="+30">+30</option>
+            </select>
+          </Col>
         </Label>
+      </FormGroup>
+      <FormGroup row>
+        <Label for="file" sm={2}>
+          <b>File:</b>
+        </Label>
+        <Col sm={10}>
+          <Input
+            type="file"
+            id="file"
+            name="file"
+            onChange={handleChange}
+            accept=".jpg, .jpeg, .png, .pdf"
+          />
+          {formData.file && <FormText>{formData.file.name}</FormText>}
+        </Col>
       </FormGroup>
 
       <FormGroup>
         <Label htmlFor="checkbox">
-          <b>Terms </b>
+          <b>Terms of Service: </b>
         </Label>
+
         <Input
           className="checkbox"
           type="checkbox"
           id="checkbox"
           name="checkbox"
-          checked={formData.terms}
+          checked={formData.checkbox}
           onChange={handleChange}
         />
-      </FormGroup>
-
-      <FormGroup>
-        <Label for="exampleFile">
-          <b>File: </b>
-        </Label>
-        <Input type="file" name="file" id="exampleFile" />
-        <FormText color="muted">
-          Eklemek istediğiniz bir dosya varsa dosyanızı seçebilirsiniz.
-        </FormText>
-      </FormGroup>
-      <FormGroup check>
-        <Label check>
-          <Input type="checkbox" /> Check me out
-        </Label>
       </FormGroup>
     </>
   );
 }
 
-export default FormOlustur;
+export default FormData;
